@@ -1,6 +1,6 @@
 paleofetch
 ==========
-
+A fork of [ss7m/paleofetch](https://github.com/ss7m/paleofetch) for Debian
 A rewrite of [neofetch](https://github.com/dylanaraps/neofetch) in C.
 Currently only supports Linux and Xorg.
 
@@ -56,7 +56,7 @@ The last configuration is the `CONFIG` macro, which controls what information pa
 prints. Each entry in this macro should look like
 
     { "NAME: ",   getter_function, false }, \
-    
+
 Take note of the trailing comma and backslash. The first piece, `"NAME: "`, sets
 what paleofetch prints before printing the information; this usually tells you what
 bit of information is being shown. Note that the name entry should be unique for entries

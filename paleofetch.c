@@ -222,7 +222,7 @@ static char *get_uptime() {
     char *uptime = malloc(BUF_SIZE);
     for (int i = 0; i < 3; ++i ) {
         if ((n = seconds / units[i].secs) || i == 2) /* always print minutes */
-            len += snprintf(uptime + len, BUF_SIZE - len, 
+            len += snprintf(uptime + len, BUF_SIZE - len,
                             "%d %s%s, ", n, units[i].name, n != 1 ? "s": "");
         seconds %= units[i].secs;
     }
@@ -263,27 +263,14 @@ static char *get_battery_percentage() {
   return battery;
 }
 
-static char *get_packages(const char* dirname, const char* pacname, int num_extraneous) {
+static char *get_packages() {
     int num_packages = 0;
-    DIR * dirp;
-    struct dirent *entry;
 
-    dirp = opendir(dirname);
-
-    if(dirp == NULL) {
-        status = -1;
-        halt_and_catch_fire("You may not have %s installed", dirname);
-    }
-
-    while((entry = readdir(dirp)) != NULL) {
-        if(entry->d_type == DT_DIR) num_packages++;
-    }
-    num_packages -= (2 + num_extraneous); // accounting for . and ..
-
-    status = closedir(dirp);
+    FILE *proc = popen("dpkg -l | grep -c '^ii'", "r");
+    fscanf(proc, "%d", &num_packages);
 
     char *packages = malloc(BUF_SIZE);
-    snprintf(packages, BUF_SIZE, "%d (%s)", num_packages, pacname);
+    snprintf(packages, BUF_SIZE, "%d (%s)", num_packages+1, "dpkg");
 
     return packages;
 }
@@ -308,10 +295,10 @@ static char *get_shell() {
 static char *get_resolution() {
     int screen, width, height;
     char *resolution = malloc(BUF_SIZE);
-    
+
     if (display != NULL) {
         screen = DefaultScreen(display);
-    
+
         width = DisplayWidth(display, screen);
         height = DisplayHeight(display, screen);
 
@@ -324,7 +311,7 @@ static char *get_resolution() {
         FILE *modes;
         char *line = NULL;
         size_t len;
-        
+
         /* preload resolution with empty string, in case we cant find a resolution through parsing */
         strncpy(resolution, "", BUF_SIZE);
 
@@ -354,7 +341,7 @@ static char *get_resolution() {
                 }
             }
         }
-        
+
         closedir(dir);
     }
 
@@ -366,10 +353,10 @@ static char *get_terminal() {
     char *terminal = malloc(BUF_SIZE);
 
     /* check if xserver is running or if we are running in a straight tty */
-    if (display != NULL) {   
+    if (display != NULL) {
 
     unsigned long _, // not unused, but we don't need the results
-                  window = RootWindow(display, XDefaultScreen(display));    
+                  window = RootWindow(display, XDefaultScreen(display));
         Atom a,
              active = XInternAtom(display, "_NET_ACTIVE_WINDOW", True),
              class = XInternAtom(display, "WM_CLASS", True);
@@ -748,7 +735,7 @@ int main(int argc, char *argv[]) {
 
     free(cache);
     free(cache_data);
-    if(display != NULL) { 
+    if(display != NULL) {
         XCloseDisplay(display);
     }
 
