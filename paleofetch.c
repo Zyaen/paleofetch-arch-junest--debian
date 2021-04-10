@@ -270,7 +270,7 @@ static char *get_packages() {
     fscanf(proc, "%d", &num_packages);
 
     char *packages = malloc(BUF_SIZE);
-    snprintf(packages, BUF_SIZE, "%d (%s)", num_packages+1, "dpkg");
+    snprintf(packages, BUF_SIZE, "%d (%s)", num_packages, "dpkg");
 
     return packages;
 }
