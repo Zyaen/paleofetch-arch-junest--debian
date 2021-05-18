@@ -1,4 +1,4 @@
-#include "logos/armbian.h"
+#include "logos/debian.h"
 #define COLOR "\e[0;31m"
 
 #define CONFIG \
@@ -12,7 +12,7 @@
     { "Uptime: ",     get_uptime,              false }, \
     { "Battery: ",    get_battery_percentage,  false }, \
     SPACER \
-    { "Packages: ",   get_packages_pacman_dpkg,   false }, \
+    { "Packages: ",   get_packages_dpkg,   false }, \
     { "Shell: ",      get_shell,             false }, \
     { "Resolution: ", get_resolution,        false }, \
     { "Terminal: ",   get_terminal,          false }, \
