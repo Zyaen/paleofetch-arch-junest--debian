@@ -7,6 +7,10 @@
 #include <dirent.h>
 #include <errno.h>
 
+#include <unistd.h>
+#include <sys/types.h>
+#include <pwd.h>
+
 #include <sys/utsname.h>
 #include <sys/sysinfo.h>
 #include <sys/statvfs.h>
@@ -160,6 +164,7 @@ static char *get_os() {
     }
 
     while (getline(&line, &len, os_release) != -1) {
+        if (sscanf(line, "PRETTY_NAME=\"%[^\"]+", name) > 0) break;
         if (sscanf(line, "NAME=\"%[^\"]+", name) > 0) break;
     }
 
@@ -263,7 +268,7 @@ static char *get_battery_percentage() {
   return battery;
 }
 
-static char *get_packages() {
+static char *get_packages_dpkg() {
     int num_packages = 0;
 
     FILE *proc = popen("dpkg -l | grep -c '^ii'", "r");
@@ -276,7 +281,40 @@ static char *get_packages() {
 }
 
 static char *get_packages_pacman() {
-    return get_packages("/var/lib/pacman/local", "pacman", 0);
+  int num_packages = 0;
+  DIR * dirp;
+  struct dirent *entry;
+  char *base="/var/lib/pacman/local";
+  char *dirname;
+
+  dirp = opendir(base);
+  if(dirp == NULL) { // not real Arch or derived
+    if ((dirname = getenv("JUNEST_HOME")) == NULL) { //try to get JUNEST_HOME
+      dirname = strcat(strcat(getpwuid(getuid())->pw_dir,"/.junest"),base); //use default one
+      dirp = opendir(dirname);
+      if(dirp == NULL) { //neither a junest Arch
+                status = -1;
+                halt_and_catch_fire("You may not have %s installed", base);
+      }
+    }
+  }
+
+
+      while((entry = readdir(dirp)) != NULL) {
+          if(entry->d_type == DT_DIR) num_packages++;
+      }
+      num_packages -= 2; // accounting for . and ..
+
+      status = closedir(dirp);
+
+      char *packages = malloc(BUF_SIZE);
+      snprintf(packages, BUF_SIZE, "%d (%s)", num_packages, "pacman");
+
+      return packages;
+}
+
+static char *get_packages_pacman_dpkg() {
+    return strcat(strcat(get_packages_pacman(),", "),get_packages_dpkg());
 }
 
 static char *get_shell() {
