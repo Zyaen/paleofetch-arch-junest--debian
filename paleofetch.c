@@ -744,7 +744,7 @@ int main(int argc, char *argv[]) {
             char *label = config[i+offset].label,
                  *value = get_value(config[i+offset], read_cache, cache_data);
             if (strcmp(value, "") != 0) { // check if value is an empty string
-                printf(COLOR"%s%s\e[0m%s\n", LOGO[i], label, value); // just print if not empty
+                printf(COLOR"%s"COLOR"%s\e[0m%s\n", LOGO[i], label, value); // just print if not empty
             } else {
                 if (strcmp(label, "") != 0) { // check if label is empty, otherwise it's a spacer
                     ++offset; // print next line of information
@@ -752,7 +752,7 @@ int main(int argc, char *argv[]) {
                     label = config[i+offset].label; // read new label and value
                     value = get_value(config[i+offset], read_cache, cache_data);
                 }
-                printf(COLOR"%s%s\e[0m%s\n", LOGO[i], label, value);
+                printf(COLOR"%s"COLOR"%s\e[0m%s\n", LOGO[i], label, value);
             }
             free(value);
 
