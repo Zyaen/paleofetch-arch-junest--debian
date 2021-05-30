@@ -1,5 +1,7 @@
 #include "logos/armbian.h"
 #define COLOR "\e[0;31m"
+#define PACNAME "junest"
+#define PACMAN_CUSTOM "/home/zyaen/.junest"
 
 #define CONFIG \
 { \

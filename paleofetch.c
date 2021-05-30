@@ -286,29 +286,20 @@ static char *get_packages_pacman() {
   int num_packages = 0;
   DIR * dirp;
   struct dirent *entry;
-  char *base="/var/lib/pacman/local";
-  char *dirname;
-  char *pacname="pacman";
-  dirp = opendir(base);
-  if(dirp == NULL) { // not real Arch or derived
-    pacname = "junest";
-    if ((dirname = getenv("JUNEST_HOME")) == NULL) { //try to get JUNEST_HOME
-      dirname = strcat(strcat(getpwuid(getuid())->pw_dir,"/.junest"),base); //use default one
-    } else dirname = strcat(dirname,base);
-      dirp = opendir(dirname);
-      if(dirp == NULL) { //neither a junest Arch
-                status = -1;
-                halt_and_catch_fire("You may not have %s installed", base);
-      }
+  char *dirname=PACMAN_CUSTOM"/var/lib/pacman/local";
+  dirp = opendir(dirname);
+  if(dirp == NULL) {
+    status = -1;
+    halt_and_catch_fire("You may not have %s installed", dirname);
   }
-      while((entry = readdir(dirp)) != NULL) {
-          if(entry->d_type == DT_DIR) num_packages++;
-      }
-      num_packages -= 2; // accounting for . and ..
-      status = closedir(dirp);
-      char *packages = malloc(BUF_SIZE);
-      snprintf(packages, BUF_SIZE, "%d (%s)", num_packages, pacname);
-      return packages;
+  while((entry = readdir(dirp)) != NULL) {
+    if(entry->d_type == DT_DIR) num_packages++;
+  }
+  num_packages -= 2; // accounting for . and ..
+  status = closedir(dirp);
+  char *packages = malloc(BUF_SIZE);
+  snprintf(packages, BUF_SIZE, "%d (%s)", num_packages, PACNAME);
+  return packages;
 }
 
 static char *get_packages_pacman_dpkg() {
