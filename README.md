@@ -1,5 +1,7 @@
 paleofetch
 ==========
+## currently discontinued
+### check out [magnus-ISU/paleofetch](https://github.com/magnus-ISU/paleofetch)
 A fork of [ss7m/paleofetch](https://github.com/ss7m/paleofetch) for Debian and derivatives with backward compatibility for Arch and derivatives, in particular [fsquillace/junest](https://github.com/fsquillace/junest)
 
 A rewrite of [neofetch](https://github.com/dylanaraps/neofetch) in C.
